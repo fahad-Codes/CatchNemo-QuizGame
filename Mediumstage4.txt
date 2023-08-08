@@ -1,0 +1,5 @@
+1) Guess word:Ne_t;NEET
+2) Guess word:Parr_t;PARROT
+3) Guess word:straw_erry;STRAWBERRY
+4) Guess word:Pome_ranates;POMEGRANATES
+5) Guess word:pea_h;PEACH

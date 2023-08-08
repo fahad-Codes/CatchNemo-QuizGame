@@ -1,0 +1,5 @@
+1) Guess Word: R_n;RUN
+2) Guess Word: B_ll;BALL
+3) Guess Word: C_t;CAT
+4) Guess Word: Ap_le;APPLE
+5) Guess Word: D_g;DOG
