@@ -95,12 +95,12 @@ class CatchNemo:
     def __init__(self):
         self.Nemo = 0
 
-    def LoadGames(self, filename, Stagename):
+    def LoadGames(self, Stage, Level):
         os.system("clear")
         self.Questions.empty()
         self.Answers.empty()
         print("Current Nemo(s):", self.Nemo)
-        with open(filename, "r") as fin:  # OPENING FILE IN READ MODE
+        with open(Stage+"Stage"+Level+".txt", "r") as fin:  # OPENING FILE IN READ MODE
             if not fin:
                 print(
                     "\n\n Stage 1 questions are not stored, Press any key to continue...!!")
@@ -108,16 +108,17 @@ class CatchNemo:
                 exit()
 
             print("\n\t\t\t <---------------------Catch The Nemo---------------------> ")
-            print("\n\t\t  	                 <---" + Stagename + "--->")
+            print("\n\t\t  	                 <--- " +
+                  Stage + " " + Level + " --->")
 
             for line in fin:  # WHILE LOOP TO RUN UNTIL THE END OF FILE
                 line = line.strip()  # Removing leading/trailing whitespace
                 if not line:  # ENDS LOOP WHEN EMPTY LINE IS FOUND
                     break
 
-                # SEPARATING LINE BASED ON DELIMITER (COMMA)
+                # SEPARATING LINE BASED ON DELIMITER
                 str_arr = line.split(';')
-                self.Questions.enqueue(str_arr[0])  # TURNING STRING TO INTEGER
+                self.Questions.enqueue(str_arr[0])
                 self.Answers.enqueue(str_arr[1])
         while not self.Questions.is_empty():
             print("\n\t\t", self.Questions.dequeue(),
@@ -136,7 +137,7 @@ class CatchNemo:
                             self.Nemo -= 1
                             flag = 1
                         elif choice == 'n':
-                            self.LoadGames(filename)
+                            self.LoadGames(Stage, Level)
                             flag = 1
                         else:
                             print(
@@ -144,7 +145,7 @@ class CatchNemo:
                             choice = input().lower()
                 if flag == 0:
                     input()
-                    self.LoadGames(filename)
+                    self.LoadGames(Stage, Level)
 
         self.Nemo += 1
         print("\n\t\t\tCongrats!! You cleared the stage 1 of the Easy level.")
@@ -153,9 +154,102 @@ class CatchNemo:
         input()
 
         with open("records.txt", "w") as fout:  # OPENING FILE IN WRITE MODE
-            fout.write("1;2;" + str(self.Nemo))
-            exit(self.Nemo)
+            if Stage == "Easy" and int(Level) < 5:
+                fout.write('1;' + str(int(Level)+1) + ';' + str(self.Nemo))
+            if Stage == "Easy" and int(Level) == 5:
+                fout.write('2;' + str(1) + ';' + str(self.Nemo))
+            if Stage == "Medium" and int(Level) < 5:
+                fout.write('2;' + str(int(Level)+1) + ';' + str(self.Nemo))
+            if Stage == "Medium" and int(Level) == 5:
+                fout.write('3;' + str(1) + ';' + str(self.Nemo))
+            if Stage == "Hard" and int(Level) < 5:
+                fout.write('3;' + str(int(Level)+1) + ';' + str(self.Nemo))
+            if Stage == "Hard" and int(Level) == 5:
+                fout.write('4;' + str(4) + ';' + str(self.Nemo))
+
+        if int(Level) < 5:
+            self.LoadGames(Stage, str(int(Level)+1))
 
 
-game = CatchNemo()
-game.LoadGames("EasyStage1.txt", "Easy level Stage 1")
+class CatchNemoMenu(CatchNemo):
+    def __init__(self):
+        super().__init__()
+        self.Stage = 0
+        self.level = 1
+
+    def loadPGame(self):
+        try:
+            with open("records.txt", "r") as fin:  # FILE OPENING IN READ ONLY MODE
+                lines = fin.readlines()
+
+                if not lines:
+                    print(
+                        "\n\t\t There is no saved data. Please complete the stages to save data.")
+                    input()
+                    return
+
+                for line in lines:
+                    line = line.strip()
+                    if not line:
+                        break
+
+                    str_arr = line.split(';')
+                    self.Stage = int(str_arr[0])
+                    self.level = str_arr[1]
+                    self.Nemo = int(str_arr[2])
+
+                    if self.Stage == 1:
+                        self.LoadGames("Easy", self.level)
+                        self.mainMenu()
+                    elif self.Stage == 2:
+                        self.LoadGames("Medium", self.level)
+                        self.mainMenu()
+                    elif self.Stage == 3:
+                        self.LoadGames("Hard", self.level)
+                        self.mainMenu()
+                    elif self.Stage == 4:
+                        print(
+                            "\n\n\t\t You have completed the game start over again......!!!")
+                        input()
+                        self.mainMenu()
+                    else:
+                        print("\n\n\t\t The data is corrupted......!!!")
+                        input()
+                        self.mainMenu()
+        except FileNotFoundError:
+            print("\n\t\t No saved data found. Please complete the stages to save data.")
+            input()
+
+    def mainMenu(self):
+        choice = 0
+        while choice != 5:
+            os.system("clear")
+            print("Current Nemo(s):", self.Nemo)
+            print("\n\t\t\t <---------------------Catch The Nemo---------------------> ")
+            print("\n\t\t\t  	             <--- MAIN MENU --->")
+            print("\n\n\n\t\t\t\t\t  Select Difficulty Level")
+            print("\n\t\t\t1) Easy")
+            print("\n\t\t\t2) Medium")
+            print("\n\t\t\t3) Hard")
+            print("\n\t\t\t4) Load Previous Game")
+            print("\n\t\t\t5) Exit")
+            choice = int(input("\n\t\t\tEnter Your Choice: "))
+
+            if choice == 1:
+                self.LoadGames("Easy", "1")
+            elif choice == 2:
+                self.LoadGames("Medium", "1")
+            elif choice == 3:
+                self.LoadGames("Hard", "1")
+            elif choice == 4:
+                self.loadPGame()
+            elif choice == 5:
+                break
+            else:
+                print("\n\t\t\tPlease enter a valid choice between 1-5:")
+                input()
+
+
+# Create an instance of the CatchNemoMenu class and run the main menu
+catch_nemo_menu = CatchNemoMenu()
+catch_nemo_menu.mainMenu()
